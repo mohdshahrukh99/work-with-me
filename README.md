@@ -182,6 +182,8 @@ Prior experience with US/UK/UAE clients · Upwork / Toptal profile · Open sourc
 ## 📬 Contact
 
 LinkedIn → (https://www.linkedin.com/in/mohdshahrukh/?skipRedirect=true)
+<div class="badge-base LI-profile-badge" data-locale="en_US" data-size="large" data-theme="dark" data-type="HORIZONTAL" data-vanity="mohdshahrukh" data-version="v1"><a class="badge-base__link LI-simple-link" href="https://in.linkedin.com/in/mohdshahrukh?trk=profile-badge">Mohd Shahrukh</a></div>
+              
 Email    → mohdshahrukh500@gmail.com
 
 ---
