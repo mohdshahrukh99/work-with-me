@@ -1,0 +1,501 @@
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: var(--font-sans); }
+.os-wrap { padding: 1rem 0; }
+.os-header { margin-bottom: 1.5rem; }
+.os-header h1 { font-size: 20px; font-weight: 500; color: var(--color-text-primary); }
+.os-header p { font-size: 13px; color: var(--color-text-secondary); margin-top: 4px; }
+.tab-bar { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 1.5rem; }
+.tab-btn { font-size: 12px; padding: 6px 12px; border-radius: var(--border-radius-md); border: 0.5px solid var(--color-border-secondary); background: var(--color-background-primary); color: var(--color-text-secondary); cursor: pointer; display: flex; align-items: center; gap: 6px; transition: all 0.15s; }
+.tab-btn:hover { background: var(--color-background-secondary); color: var(--color-text-primary); }
+.tab-btn.active { background: #E6F1FB; border-color: #378ADD; color: #0C447C; font-weight: 500; }
+.panel { display: none; }
+.panel.active { display: block; }
+.section-label { font-size: 11px; font-weight: 500; letter-spacing: 0.05em; text-transform: uppercase; color: var(--color-text-tertiary); margin-bottom: 8px; }
+.card { background: var(--color-background-primary); border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-lg); padding: 1rem 1.25rem; margin-bottom: 1rem; }
+.input-row { display: flex; gap: 8px; margin-bottom: 1rem; }
+.input-row input, .input-row select { flex: 1; }
+textarea { width: 100%; min-height: 90px; resize: vertical; font-size: 14px; font-family: var(--font-sans); padding: 10px 12px; border: 0.5px solid var(--color-border-secondary); border-radius: var(--border-radius-md); background: var(--color-background-primary); color: var(--color-text-primary); }
+select, input[type=text], input[type=number] { font-size: 14px; font-family: var(--font-sans); padding: 8px 12px; border: 0.5px solid var(--color-border-secondary); border-radius: var(--border-radius-md); background: var(--color-background-primary); color: var(--color-text-primary); }
+.run-btn { background: #E6F1FB; border: 0.5px solid #378ADD; color: #0C447C; font-size: 13px; font-weight: 500; padding: 9px 18px; border-radius: var(--border-radius-md); cursor: pointer; display: flex; align-items: center; gap: 6px; white-space: nowrap; }
+.run-btn:hover { background: #B5D4F4; }
+.run-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+.output-box { background: var(--color-background-secondary); border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-md); padding: 1rem; font-size: 14px; color: var(--color-text-primary); line-height: 1.7; min-height: 80px; white-space: pre-wrap; word-break: break-word; }
+.output-box.empty { color: var(--color-text-tertiary); font-style: italic; }
+.copy-btn { font-size: 12px; padding: 5px 10px; border-radius: var(--border-radius-md); border: 0.5px solid var(--color-border-tertiary); background: transparent; color: var(--color-text-secondary); cursor: pointer; margin-top: 8px; }
+.copy-btn:hover { background: var(--color-background-secondary); }
+.chip-row { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 1rem; }
+.chip { font-size: 12px; padding: 4px 10px; border-radius: 20px; border: 0.5px solid var(--color-border-secondary); background: var(--color-background-secondary); color: var(--color-text-secondary); cursor: pointer; transition: all 0.12s; }
+.chip.sel { background: #E6F1FB; border-color: #378ADD; color: #0C447C; font-weight: 500; }
+.viral-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(0, 1fr)); gap: 10px; margin-bottom: 1rem; }
+.viral-card { background: var(--color-background-secondary); border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-md); padding: 10px; font-size: 12px; color: var(--color-text-secondary); cursor: pointer; transition: border-color 0.12s; }
+.viral-card:hover { border-color: var(--color-border-secondary); }
+.viral-card .post-title { font-size: 13px; font-weight: 500; color: var(--color-text-primary); margin-bottom: 4px; }
+.viral-card .imp { color: #0C447C; font-weight: 500; }
+.week-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; }
+.day-cell { background: var(--color-background-secondary); border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-md); padding: 8px 6px; min-height: 80px; }
+.day-name { font-size: 10px; font-weight: 500; color: var(--color-text-tertiary); margin-bottom: 6px; text-transform: uppercase; }
+.day-post { font-size: 11px; padding: 3px 6px; border-radius: 4px; margin-bottom: 3px; line-height: 1.3; }
+.day-post.manifesto { background: #E6F1FB; color: #0C447C; }
+.day-post.story { background: #EAF3DE; color: #27500A; }
+.day-post.tip { background: #FAEEDA; color: #633806; }
+.day-post.hook { background: #EEEDFE; color: #3C3489; }
+.day-post.rest { color: var(--color-text-tertiary); font-style: italic; }
+.stat-row { display: flex; gap: 10px; margin-bottom: 1rem; }
+.stat-mini { flex: 1; background: var(--color-background-secondary); border-radius: var(--border-radius-md); padding: 10px; text-align: center; }
+.stat-mini .val { font-size: 18px; font-weight: 500; color: var(--color-text-primary); }
+.stat-mini .lbl { font-size: 11px; color: var(--color-text-tertiary); margin-top: 2px; }
+.platform-tabs { display: flex; gap: 6px; margin-bottom: 1rem; }
+.ptab { font-size: 12px; padding: 5px 12px; border-radius: var(--border-radius-md); border: 0.5px solid var(--color-border-secondary); background: transparent; cursor: pointer; color: var(--color-text-secondary); }
+.ptab.active { background: #E6F1FB; border-color: #378ADD; color: #0C447C; }
+.thinking { font-size: 13px; color: var(--color-text-secondary); font-style: italic; padding: 0.5rem 0; }
+.viral-post-item { border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-md); padding: 12px; margin-bottom: 8px; cursor: pointer; }
+.viral-post-item:hover { background: var(--color-background-secondary); }
+.viral-post-item .imp-badge { font-size: 11px; padding: 2px 8px; border-radius: 20px; background: #E6F1FB; color: #0C447C; display: inline-block; margin-bottom: 6px; }
+.viral-post-item .snippet { font-size: 13px; color: var(--color-text-secondary); line-height: 1.5; }
+</style>
+
+<div class="os-wrap">
+  <div class="os-header">
+    <h1>Shahrukh's LinkedIn Content OS</h1>
+    <p>10-in-1 content engine — strategy, drafting, hooks, voice, distribution &amp; leads</p>
+  </div>
+
+  <div class="tab-bar">
+    <button class="tab-btn active" onclick="switchTab('calendar')"><i class="ti ti-calendar" aria-hidden="true"></i> Calendar</button>
+    <button class="tab-btn" onclick="switchTab('picker')"><i class="ti ti-layout-cards" aria-hidden="true"></i> Post Picker</button>
+    <button class="tab-btn" onclick="switchTab('hooks')"><i class="ti ti-bolt" aria-hidden="true"></i> Hook Engine</button>
+    <button class="tab-btn" onclick="switchTab('drafter')"><i class="ti ti-pencil" aria-hidden="true"></i> Post Drafter</button>
+    <button class="tab-btn" onclick="switchTab('critic')"><i class="ti ti-eye" aria-hidden="true"></i> Voice Critic</button>
+    <button class="tab-btn" onclick="switchTab('xplatform')"><i class="ti ti-arrows-transfer-up" aria-hidden="true"></i> Cross-Platform</button>
+    <button class="tab-btn" onclick="switchTab('image')"><i class="ti ti-photo" aria-hidden="true"></i> Image Prompts</button>
+    <button class="tab-btn" onclick="switchTab('comments')"><i class="ti ti-message" aria-hidden="true"></i> Comment Reply</button>
+    <button class="tab-btn" onclick="switchTab('dms')"><i class="ti ti-send" aria-hidden="true"></i> DM Follow-up</button>
+    <button class="tab-btn" onclick="switchTab('viral10')"><i class="ti ti-flame" aria-hidden="true"></i> 10 Viral Posts</button>
+  </div>
+
+  <!-- CALENDAR -->
+  <div class="panel active" id="panel-calendar">
+    <div class="card">
+      <p class="section-label">Weekly Content Strategy</p>
+      <div class="week-grid">
+        <div class="day-cell"><div class="day-name">Mon</div><div class="day-post manifesto">Manifesto: AI hiring era insight</div></div>
+        <div class="day-cell"><div class="day-name">Tue</div><div class="day-post story">Story: Candidate placed in London</div></div>
+        <div class="day-cell"><div class="day-name">Wed</div><div class="day-post tip">Tip: Resume 30-sec scan formula</div></div>
+        <div class="day-cell"><div class="day-name">Thu</div><div class="day-post hook">Build-in-Public: TA metrics win</div></div>
+        <div class="day-cell"><div class="day-name">Fri</div><div class="day-post story">Salary negotiation script post</div></div>
+        <div class="day-cell"><div class="day-name">Sat</div><div class="day-post manifesto">Lead Magnet: Free LinkedIn guide</div></div>
+        <div class="day-cell"><div class="day-name">Sun</div><div class="day-post rest">Rest / Repurpose</div></div>
+      </div>
+    </div>
+    <div class="card">
+      <p class="section-label">Generate custom weekly strategy</p>
+      <div class="input-row">
+        <input type="text" id="cal-topic" placeholder="Focus topic this week (e.g. AI in hiring, salary tips...)" style="flex:1" />
+      </div>
+      <button class="run-btn" id="cal-btn" onclick="runCalendar()"><i class="ti ti-wand" aria-hidden="true"></i> Generate strategy</button>
+      <div id="cal-output" class="output-box empty" style="margin-top:12px">Your weekly plan will appear here...</div>
+      <button class="copy-btn" onclick="copyOut('cal-output')"><i class="ti ti-copy" aria-hidden="true"></i> Copy</button>
+    </div>
+  </div>
+
+  <!-- POST PICKER -->
+  <div class="panel" id="panel-picker">
+    <div class="card">
+      <p class="section-label">What are you trying to achieve?</p>
+      <div class="chip-row">
+        <div class="chip sel" onclick="toggleChip(this)">Build authority</div>
+        <div class="chip" onclick="toggleChip(this)">Generate leads</div>
+        <div class="chip" onclick="toggleChip(this)">Grow followers</div>
+        <div class="chip" onclick="toggleChip(this)">Sell services</div>
+        <div class="chip" onclick="toggleChip(this)">Inspire job seekers</div>
+        <div class="chip" onclick="toggleChip(this)">Call out HR problems</div>
+        <div class="chip" onclick="toggleChip(this)">Brand collab pitch</div>
+      </div>
+      <p class="section-label" style="margin-top:12px">Post type</p>
+      <div class="chip-row">
+        <div class="chip sel" id="pt-manifesto" onclick="selectPostType(this,'manifesto')">Manifesto</div>
+        <div class="chip" id="pt-bip" onclick="selectPostType(this,'build-in-public')">Build-in-Public</div>
+        <div class="chip" id="pt-lead" onclick="selectPostType(this,'Lead Magnet')">Lead Magnet</div>
+        <div class="chip" id="pt-story" onclick="selectPostType(this,'Story')">Story</div>
+        <div class="chip" id="pt-tip" onclick="selectPostType(this,'Tactical Tip')">Tactical Tip</div>
+        <div class="chip" id="pt-rant" onclick="selectPostType(this,'Rant')">Rant</div>
+        <div class="chip" id="pt-poll" onclick="selectPostType(this,'Poll')">Poll</div>
+      </div>
+      <p class="section-label" style="margin-top:12px">Topic / angle</p>
+      <textarea id="picker-topic" placeholder="e.g. The myth of the immediate joiner advantage in Indian IT hiring 2026"></textarea>
+      <button class="run-btn" style="margin-top:8px" onclick="runPicker()"><i class="ti ti-wand" aria-hidden="true"></i> Recommend format + angle ↗</button>
+      <div id="picker-output" class="output-box empty" style="margin-top:12px">Format recommendation will appear here...</div>
+      <button class="copy-btn" onclick="copyOut('picker-output')"><i class="ti ti-copy" aria-hidden="true"></i> Copy</button>
+    </div>
+  </div>
+
+  <!-- HOOK ENGINE -->
+  <div class="panel" id="panel-hooks">
+    <div class="card">
+      <p class="section-label">Your post topic or draft opening line</p>
+      <textarea id="hook-input" placeholder="e.g. Most recruiters reject candidates because of notice period, not skills..."></textarea>
+      <p class="section-label" style="margin-top:10px">Hook style</p>
+      <div class="chip-row">
+        <div class="chip sel" onclick="toggleChip(this)">Contrarian</div>
+        <div class="chip" onclick="toggleChip(this)">Confession</div>
+        <div class="chip" onclick="toggleChip(this)">Stat/data</div>
+        <div class="chip" onclick="toggleChip(this)">Story opener</div>
+        <div class="chip" onclick="toggleChip(this)">Question</div>
+      </div>
+      <button class="run-btn" style="margin-top:8px" onclick="runHooks()"><i class="ti ti-bolt" aria-hidden="true"></i> Generate 5 hook variants</button>
+      <div id="hooks-output" class="output-box empty" style="margin-top:12px">5 hook variants will appear here...</div>
+      <button class="copy-btn" onclick="copyOut('hooks-output')"><i class="ti ti-copy" aria-hidden="true"></i> Copy all hooks</button>
+    </div>
+  </div>
+
+  <!-- POST DRAFTER -->
+  <div class="panel" id="panel-drafter">
+    <div class="card">
+      <p class="section-label">What's the post about?</p>
+      <textarea id="draft-input" placeholder="Paste your hook or topic idea. e.g. I rejected a candidate with 10+ years experience today — then hired them anyway. Here's why."></textarea>
+      <div class="input-row" style="margin-top:10px">
+        <select id="draft-type" style="flex:1">
+          <option>Manifesto</option>
+          <option>Story</option>
+          <option>Tactical Tip</option>
+          <option>Build-in-Public</option>
+          <option>Lead Magnet</option>
+          <option>Rant</option>
+        </select>
+        <select id="draft-cta" style="flex:1">
+          <option>Comment prompt</option>
+          <option>Follow CTA</option>
+          <option>DM CTA</option>
+          <option>Link to service</option>
+          <option>Save/share nudge</option>
+        </select>
+      </div>
+      <button class="run-btn" onclick="runDrafter()"><i class="ti ti-pencil" aria-hidden="true"></i> Draft in Shahrukh's voice</button>
+      <div id="drafter-output" class="output-box empty" style="margin-top:12px">Your full post draft will appear here...</div>
+      <button class="copy-btn" onclick="copyOut('drafter-output')"><i class="ti ti-copy" aria-hidden="true"></i> Copy post</button>
+    </div>
+  </div>
+
+  <!-- VOICE CRITIC -->
+  <div class="panel" id="panel-critic">
+    <div class="card">
+      <p class="section-label">Paste your draft — I'll kill the clichés &amp; hedge words</p>
+      <textarea id="critic-input" style="min-height:130px" placeholder="Paste your LinkedIn post draft here..."></textarea>
+      <button class="run-btn" style="margin-top:8px" onclick="runCritic()"><i class="ti ti-eye" aria-hidden="true"></i> Critique &amp; rewrite</button>
+      <div id="critic-output" class="output-box empty" style="margin-top:12px">Critique + clean rewrite will appear here...</div>
+      <button class="copy-btn" onclick="copyOut('critic-output')"><i class="ti ti-copy" aria-hidden="true"></i> Copy rewrite</button>
+    </div>
+  </div>
+
+  <!-- CROSS PLATFORM -->
+  <div class="panel" id="panel-xplatform">
+    <div class="card">
+      <p class="section-label">LinkedIn post to adapt</p>
+      <textarea id="xp-input" style="min-height:110px" placeholder="Paste your LinkedIn post here..."></textarea>
+      <div class="platform-tabs" style="margin-top:10px">
+        <button class="ptab active" id="ptab-x" onclick="selectPlatform('X (Twitter thread)')">X / Twitter</button>
+        <button class="ptab" id="ptab-reddit" onclick="selectPlatform('Reddit post')">Reddit</button>
+        <button class="ptab" id="ptab-instagram" onclick="selectPlatform('Instagram caption')">Instagram</button>
+      </div>
+      <button class="run-btn" onclick="runXPlatform()"><i class="ti ti-arrows-transfer-up" aria-hidden="true"></i> Adapt for platform</button>
+      <div id="xp-output" class="output-box empty" style="margin-top:12px">Adapted content will appear here...</div>
+      <button class="copy-btn" onclick="copyOut('xp-output')"><i class="ti ti-copy" aria-hidden="true"></i> Copy</button>
+    </div>
+  </div>
+
+  <!-- IMAGE PROMPTS -->
+  <div class="panel" id="panel-image">
+    <div class="card">
+      <p class="section-label">Post topic or draft</p>
+      <textarea id="img-input" placeholder="e.g. Post about salary negotiation — candidate who held firm got 14 LPA..."></textarea>
+      <p class="section-label" style="margin-top:10px">Image style</p>
+      <div class="chip-row">
+        <div class="chip sel" onclick="toggleChip(this)">Infographic</div>
+        <div class="chip" onclick="toggleChip(this)">Carousel cover</div>
+        <div class="chip" onclick="toggleChip(this)">Quote card</div>
+        <div class="chip" onclick="toggleChip(this)">Meme format</div>
+        <div class="chip" onclick="toggleChip(this)">Story visual</div>
+      </div>
+      <button class="run-btn" style="margin-top:8px" onclick="runImage()"><i class="ti ti-photo" aria-hidden="true"></i> Generate 2 ChatGPT prompts</button>
+      <div id="img-output" class="output-box empty" style="margin-top:12px">Your image prompts will appear here — paste them into ChatGPT...</div>
+      <button class="copy-btn" onclick="copyOut('img-output')"><i class="ti ti-copy" aria-hidden="true"></i> Copy prompts</button>
+    </div>
+  </div>
+
+  <!-- COMMENT REPLY -->
+  <div class="panel" id="panel-comments">
+    <div class="card">
+      <p class="section-label">Your post summary</p>
+      <input type="text" id="comment-post" placeholder="e.g. Post about not resigning without an offer letter" style="width:100%; margin-bottom:10px" />
+      <p class="section-label">Comment to reply to</p>
+      <textarea id="comment-input" placeholder="e.g. 'But sometimes the toxic environment is so bad you have no choice but to leave immediately'"></textarea>
+      <div class="chip-row" style="margin-top:8px">
+        <div class="chip sel" onclick="toggleChip(this)">Agree &amp; add depth</div>
+        <div class="chip" onclick="toggleChip(this)">Respectfully push back</div>
+        <div class="chip" onclick="toggleChip(this)">Ask follow-up</div>
+        <div class="chip" onclick="toggleChip(this)">Thank + redirect</div>
+      </div>
+      <button class="run-btn" style="margin-top:8px" onclick="runComment()"><i class="ti ti-message" aria-hidden="true"></i> Draft reply</button>
+      <div id="comment-output" class="output-box empty" style="margin-top:12px">Your comment reply will appear here...</div>
+      <button class="copy-btn" onclick="copyOut('comment-output')"><i class="ti ti-copy" aria-hidden="true"></i> Copy reply</button>
+    </div>
+  </div>
+
+  <!-- DM FOLLOW UP -->
+  <div class="panel" id="panel-dms">
+    <div class="card">
+      <p class="section-label">DM context</p>
+      <div class="input-row">
+        <select id="dm-intent" style="flex:1">
+          <option>Lead who liked a post</option>
+          <option>Brand collab inquiry</option>
+          <option>Candidate referral ask</option>
+          <option>Job seeker asking for help</option>
+          <option>Someone who downloaded lead magnet</option>
+          <option>Recruiter following up</option>
+        </select>
+      </div>
+      <textarea id="dm-context" placeholder="What do you know about this person? What's the goal of the DM? e.g. They commented 'great post' on my resume tips post, I want to offer my resume writing service..."></textarea>
+      <button class="run-btn" style="margin-top:8px" onclick="runDM()"><i class="ti ti-send" aria-hidden="true"></i> Draft DM sequence</button>
+      <div id="dm-output" class="output-box empty" style="margin-top:12px">Your DM follow-up sequence will appear here...</div>
+      <button class="copy-btn" onclick="copyOut('dm-output')"><i class="ti ti-copy" aria-hidden="true"></i> Copy DMs</button>
+    </div>
+  </div>
+
+  <!-- 10 VIRAL POSTS -->
+  <div class="panel" id="panel-viral10">
+    <div class="stat-row">
+      <div class="stat-mini"><div class="val">475K</div><div class="lbl">Best impression</div></div>
+      <div class="stat-mini"><div class="val">139K</div><div class="lbl">7-day views</div></div>
+      <div class="stat-mini"><div class="val">63K</div><div class="lbl">Followers</div></div>
+    </div>
+    <div class="card">
+      <p class="section-label">Your top posts — click to generate a creator brief or new variant</p>
+      <div class="viral-post-item" onclick="loadViralPost(0)">
+        <span class="imp-badge">475K impressions</span>
+        <div class="snippet">"Dear HR Managers, Stop calling candidates for interviews when the decision is already made..."</div>
+      </div>
+      <div class="viral-post-item" onclick="loadViralPost(1)">
+        <span class="imp-badge">475K impressions</span>
+        <div class="snippet">"Please don't put resignation letter until you have another offer letter. Immediate joiner myth..."</div>
+      </div>
+      <div class="viral-post-item" onclick="loadViralPost(2)">
+        <span class="imp-badge">236K impressions</span>
+        <div class="snippet">"HR: Give me 1 good reason for WFH — Candidate: 59 minutes one-way commute..."</div>
+      </div>
+      <div class="viral-post-item" onclick="loadViralPost(3)">
+        <span class="imp-badge">230K impressions</span>
+        <div class="snippet">"I've noticed something on LinkedIn: people ask for help getting a job, then once stable..."</div>
+      </div>
+      <div class="viral-post-item" onclick="loadViralPost(4)">
+        <span class="imp-badge">202K impressions</span>
+        <div class="snippet">"Immediate joiner will get job easily — that's a myth. Recruiters want you to compromise..."</div>
+      </div>
+    </div>
+    <div class="card">
+      <p class="section-label">Generate 10 viral posts in my niche</p>
+      <div class="chip-row">
+        <div class="chip sel" onclick="toggleChip(this)">Recruiter truth bombs</div>
+        <div class="chip" onclick="toggleChip(this)">Candidate advocacy</div>
+        <div class="chip" onclick="toggleChip(this)">AI &amp; jobs</div>
+        <div class="chip" onclick="toggleChip(this)">Salary reality</div>
+        <div class="chip sel" onclick="toggleChip(this)">Hiring system critique</div>
+        <div class="chip" onclick="toggleChip(this)">Career growth</div>
+      </div>
+      <button class="run-btn" style="margin-top:8px" onclick="runViral10()"><i class="ti ti-flame" aria-hidden="true"></i> Generate 10 viral post ideas</button>
+      <div id="viral10-output" class="output-box empty" style="margin-top:12px">10 viral post concepts will appear here...</div>
+      <button class="copy-btn" onclick="copyOut('viral10-output')"><i class="ti ti-copy" aria-hidden="true"></i> Copy all</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const VOICE_CONTEXT = `You are writing for Mohd Shahrukh, a Global Talent Acquisition Leader based in Jaipur, India with 7+ years in tech recruitment. His LinkedIn voice is:
+- Direct, empathetic, slightly provocative — he challenges bad HR practices
+- Uses short punchy sentences and white space
+- Speaks to both job seekers (freshers + experienced) AND recruiters/HR managers
+- His top viral posts are about: candidates being mistreated, salary fairness, the myth of immediate joiners, recruiter transparency, AI in hiring
+- He has 63K+ followers, 20M+ content reach
+- He runs Code1 Tech Systems, hires for AI/ML, cloud, data engineering roles
+- His services: Resume writing, LinkedIn optimization, interview prep, HR consulting, brand collaborations
+- He avoids: corporate jargon, hollow positivity, hedge words like "perhaps" / "it seems" / "one might argue"
+- His CTAs are: follow, comment a word, save this, share with someone who needs it
+- Tone: mentoring a younger sibling who is navigating corporate India in the AI era`;
+
+let selectedPostType = 'manifesto';
+let selectedPlatform = 'X (Twitter thread)';
+
+function switchTab(id) {
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('panel-' + id).classList.add('active');
+  event.currentTarget.classList.add('active');
+}
+
+function toggleChip(el) { el.classList.toggle('sel'); }
+
+function selectPostType(el, type) {
+  document.querySelectorAll('[id^="pt-"]').forEach(c => c.classList.remove('sel'));
+  el.classList.add('sel');
+  selectedPostType = type;
+}
+
+function selectPlatform(platform) {
+  selectedPlatform = platform;
+  document.querySelectorAll('.ptab').forEach(b => b.classList.remove('active'));
+  event.currentTarget.classList.add('active');
+}
+
+function setOutput(id, text, isEmpty) {
+  const el = document.getElementById(id);
+  el.textContent = text;
+  el.className = 'output-box' + (isEmpty ? ' empty' : '');
+}
+
+function copyOut(id) {
+  const text = document.getElementById(id).textContent;
+  navigator.clipboard.writeText(text).catch(() => {});
+}
+
+async function callClaude(systemPrompt, userPrompt, outputId, btnId) {
+  const btn = document.getElementById(btnId);
+  if (btn) btn.disabled = true;
+  setOutput(outputId, 'Thinking...', true);
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 1000,
+        system: systemPrompt,
+        messages: [{ role: 'user', content: userPrompt }]
+      })
+    });
+    const data = await res.json();
+    const text = data.content?.map(b => b.text || '').join('') || 'No response.';
+    setOutput(outputId, text, false);
+  } catch(e) {
+    setOutput(outputId, 'Error: ' + e.message, true);
+  }
+  if (btn) btn.disabled = false;
+}
+
+function runCalendar() {
+  const topic = document.getElementById('cal-topic').value || 'AI hiring trends in India 2026';
+  callClaude(
+    VOICE_CONTEXT + '\nYou are a LinkedIn content strategist.',
+    `Create a detailed weekly LinkedIn content calendar for Shahrukh focused on: "${topic}"\n\nFor each of 7 days include: Post type, Hook (first line), Format, CTA. Format it clearly. Mon-Sun. Keep it actionable and specific to his niche (TA, HR, AI hiring, career advice, Indian job market).`,
+    'cal-output', 'cal-btn'
+  );
+}
+
+function runPicker() {
+  const topic = document.getElementById('picker-topic').value;
+  const chips = [...document.querySelectorAll('#panel-picker .chip.sel')].map(c => c.textContent).join(', ');
+  callClaude(
+    VOICE_CONTEXT,
+    `Post type selected: ${selectedPostType}\nGoals: ${chips}\nTopic/angle: "${topic}"\n\nRecommend the best LinkedIn post format for this. Include: why this format works for Shahrukh's audience, the ideal structure (3-5 bullet points), ideal length, best CTA, and one killer hook suggestion. Be specific.`,
+    'picker-output', null
+  );
+}
+
+function runHooks() {
+  const input = document.getElementById('hook-input').value;
+  const styles = [...document.querySelectorAll('#panel-hooks .chip.sel')].map(c => c.textContent).join(', ');
+  callClaude(
+    VOICE_CONTEXT,
+    `Topic: "${input}"\nRequested hook styles: ${styles}\n\nWrite exactly 5 hook variants for this LinkedIn post. Each hook is max 2 lines. Number them 1-5. Make them scroll-stopping. Label each with its style. Avoid clichés. Each must make a recruiter or job seeker stop scrolling.`,
+    'hooks-output', null
+  );
+}
+
+function runDrafter() {
+  const input = document.getElementById('draft-input').value;
+  const type = document.getElementById('draft-type').value;
+  const cta = document.getElementById('draft-cta').value;
+  callClaude(
+    VOICE_CONTEXT,
+    `Write a full LinkedIn post for Shahrukh.\n\nType: ${type}\nIdea/hook: "${input}"\nCTA type: ${cta}\n\nWrite the complete post in his exact voice. Use short sentences. Strategic white space. No corporate fluff. Include a strong hook, body with real insight, and the specified CTA. Max 300 words. End with 4-5 relevant hashtags.`,
+    'drafter-output', null
+  );
+}
+
+function runCritic() {
+  const draft = document.getElementById('critic-input').value;
+  callClaude(
+    VOICE_CONTEXT,
+    `Critique this LinkedIn post draft and rewrite it in Shahrukh's voice:\n\n"${draft}"\n\nFirst: List 3-5 specific problems (hedge words, clichés, weak lines, passive voice, anything that dilutes impact). Then: Provide the complete rewritten version. Be ruthless about removing hollow phrases. His voice is direct, empathetic, punchy.`,
+    'critic-output', null
+  );
+}
+
+function runXPlatform() {
+  const post = document.getElementById('xp-input').value;
+  callClaude(
+    VOICE_CONTEXT,
+    `Adapt this LinkedIn post for ${selectedPlatform}:\n\n"${post}"\n\nRules:\n- X/Twitter: Thread format, max 280 chars per tweet, numbered 1/n, punchy opener\n- Reddit: Longer, conversational, community-first tone, add context, no self-promo\n- Instagram: Caption with visual hook, emojis OK, 3-5 hashtags\n\nWrite the full adapted version.`,
+    'xp-output', null
+  );
+}
+
+function runImage() {
+  const post = document.getElementById('img-input').value;
+  const styles = [...document.querySelectorAll('#panel-image .chip.sel')].map(c => c.textContent).join(', ');
+  callClaude(
+    VOICE_CONTEXT + '\nYou are an expert at writing ChatGPT image generation prompts.',
+    `Post topic: "${post}"\nImage styles requested: ${styles}\n\nWrite 2 detailed ChatGPT/DALL-E image generation prompts for this LinkedIn post. Each prompt should be specific: include visual layout, colors (professional, LinkedIn-appropriate), text overlay suggestions, style, mood. Label them Prompt 1 and Prompt 2.`,
+    'img-output', null
+  );
+}
+
+function runComment() {
+  const post = document.getElementById('comment-post').value;
+  const comment = document.getElementById('comment-input').value;
+  const tone = [...document.querySelectorAll('#panel-comments .chip.sel')].map(c => c.textContent).join(', ');
+  callClaude(
+    VOICE_CONTEXT,
+    `Shahrukh's post was about: "${post}"\n\nComment received: "${comment}"\n\nTone: ${tone}\n\nWrite a thoughtful, authentic LinkedIn comment reply in Shahrukh's voice. Max 4 sentences. No hollow "great point!" openers. Add value, show personality, keep it human.`,
+    'comment-output', null
+  );
+}
+
+function runDM() {
+  const intent = document.getElementById('dm-intent').value;
+  const context = document.getElementById('dm-context').value;
+  callClaude(
+    VOICE_CONTEXT,
+    `DM intent: ${intent}\nContext: "${context}"\n\nWrite a 3-message DM follow-up sequence for Shahrukh on LinkedIn.\nMessage 1: Initial outreach (friendly, not salesy, reference their action)\nMessage 2: Follow-up if no reply after 3 days (add value)\nMessage 3: Final follow-up (soft close or pivot)\n\nKeep each message short and human. No corporate templates.`,
+    'dm-output', null
+  );
+}
+
+const viralPosts = [
+  'Dear HR Managers — Stop calling candidates for interviews when the decision is already made.',
+  'Dear Jobseeker — Please do not put your resignation letter until you have another offer letter in hand.',
+  'HR asked for one good reason for WFH. Candidate: 59 minutes one-way commute. 500 hours a year. They still said no.',
+  'I noticed people ask for referrals when unemployed, then forget to help others once they land a role.',
+  'The immediate joiner myth: companies do not hire because you are available — they hire when you match 100%.'
+];
+
+function loadViralPost(i) {
+  document.getElementById('viral10-output').textContent = 'Generating creator brief for: ' + viralPosts[i] + '...';
+  document.getElementById('viral10-output').className = 'output-box empty';
+  callClaude(
+    VOICE_CONTEXT,
+    `This post got 200K-475K impressions: "${viralPosts[i]}"\n\nDo two things:\n1. Creator Brief: Turn this into a brief for 3 nano-creators who can amplify it — include suggested angles, how to make it their own, what audiences they should target\n2. 3 New Variants: Write 3 fresh posts inspired by the same insight but with different hooks and angles\n\nBe specific to Shahrukh's niche.`,
+    'viral10-output', null
+  );
+  document.querySelectorAll('.tab-btn')[9].click();
+}
+
+function runViral10() {
+  const chips = [...document.querySelectorAll('#panel-viral10 .chip.sel')].map(c => c.textContent).join(', ');
+  callClaude(
+    VOICE_CONTEXT,
+    `Generate 10 viral LinkedIn post ideas for Shahrukh in these themes: ${chips}\n\nBase them on his proven viral formats (short punchy takes, "Dear HR/Dear Candidate" format, myth-busting, salary reality checks, recruiter confessions).\n\nFor each idea:\n- Hook (first line, scroll-stopping)\n- Format type\n- Why it will go viral (1 sentence)\n\nNumber them 1-10. Make them ready to draft immediately.`,
+    'viral10-output', null
+  );
+}
+</script>
